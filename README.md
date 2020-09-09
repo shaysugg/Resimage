@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat"><img src="https://img.shields.io/badge/language-swift5.1-f48041.svg?style=flat">
+<img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat"> <img src="https://img.shields.io/badge/language-swift5.1-f48041.svg?style=flat">
 
 # Resimage
 A command-line tool written in swift that lets you resize your images super fast!
@@ -27,6 +27,6 @@ OPTIONS:
   -h, --help              Show help information.
 ```
 
-##TODO
+## TODO
 * Resizing multiple images in a directory
-* Resizing to IOS and Android standard icon sizes
+* Resizing to iOS and Android standard icon sizes
