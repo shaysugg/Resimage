@@ -36,7 +36,7 @@ $ resimage resize ~/desktop/picture.jpg --width 100 -s ~/desktop/resized/resized
 ```
 
 ### Installation 
-- Using [Mit](https://github.com/yonaskolb/mint)
+- Using [Mint](https://github.com/yonaskolb/mint)
 ```
 $ mint install shaysugg/Resimage
 ```
