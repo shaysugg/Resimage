@@ -1,7 +1,7 @@
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat"> <img src="https://img.shields.io/badge/language-swift5.1-f48041.svg?style=flat">
 
 # Resimage
-A command-line tool written in swift that lets you resize your images super fast!
+A command-line tool written in swift for resizing your images super fast!
 
 ## Usage
 ```
@@ -25,6 +25,27 @@ OPTIONS:
                           pass.
   -f, --format <format>   Should pass png or jpg
   -h, --help              Show help information.
+```
+
+### Examples
+
+```
+$ resimage resize ~/desktop/picture.jpg --width 100
+$ resimage resize ~/desktop/picture.jpg --width 100 --height 200 -f png
+$ resimage resize ~/desktop/picture.jpg --width 100 -s ~/desktop/resized/resizedpicture.jpg
+```
+
+### Installation 
+- Using [Mit](https://github.com/yonaskolb/mint)
+```
+$ mint install shaysugg/Resimage
+```
+- Manually 
+```
+$ git clone https://github.com/shaysugg/Resimage.git
+$ cd Resimage
+$ swift build --configuration release
+$ cp -f .build/release/resimage /usr/local/bin/resimage
 ```
 
 ## TODO
