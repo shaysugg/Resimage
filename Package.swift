@@ -4,9 +4,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "Resimage",
+    name: "resimage",
     products: [
-      .executable(name: "Resimage", targets: ["imageResizer"])
+      .executable(name: "resimage", targets: ["imageResizer"])
     ],
     dependencies: [
          .package(url: "https://github.com/apple/swift-argument-parser" , from: "0.0.1")
