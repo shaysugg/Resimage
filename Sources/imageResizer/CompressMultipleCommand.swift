@@ -50,7 +50,7 @@ struct CompressMultiple: ParsableCommand {
             options: [.skipsSubdirectoryDescendants, .skipsHiddenFiles])
             
             .filter { (url) -> Bool in
-                ImageFormat(rawValue: url.pathExtension) != nil
+                ImageFormat(rawValue: url.pathExtension.lowercased()) != nil
             }
         
         
@@ -87,13 +87,7 @@ struct CompressMultiple: ParsableCommand {
             
             // Configure image type
             // its better to use heic because it reduce file size significantly
-            var imageType: CFString {
-                if #available(OSX 10.13, *) {
-                    return AVFileType.heic as CFString
-                } else {
-                    return ImageFormat(rawValue: url.pathExtension)!.cfsting
-                }
-            }
+            let imageType = ImageFormat(rawValue: url.pathExtension)!.cfsting
             
             // Configure parameters that needed to store image
             let destinationURL = destinationDirectoryURL.appendingPathComponent(url.lastPathComponent)
