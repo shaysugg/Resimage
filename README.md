@@ -4,7 +4,7 @@
 A command-line tool written in swift for resizing your images super fast!
 
 ## Usage
-* **Resizie an image**
+* **Resize an image**
 ```
 $ resimage resize --help
 
@@ -75,5 +75,5 @@ $ cp -f .build/release/resimage /usr/local/bin/resimage
 ```
 
 ## TODO
-[X]- Compress multiple images of a directory
-[ ]- Resize to iOS and Android standard icon sizes
+- [X] Compress multiple images of a directory
+- [ ] Resize to iOS and Android standard icon sizes
