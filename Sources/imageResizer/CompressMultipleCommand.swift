@@ -13,7 +13,10 @@ import AVFoundation
 
 
 struct CompressMultiple: ParsableCommand {
-    @Argument(help: "The directory that contains images you want to resaze")
+    public static let configuration = CommandConfiguration(
+        abstract: "Compress images that exist in a diractory")
+    
+    @Argument(help: "The directory that contains images you want to compress")
     private var imagesDirectoryPath: String
     
     @Option(name: .shortAndLong ,help: "Amount of Compression you want, Should be between 0 to 1.")
