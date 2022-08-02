@@ -27,6 +27,7 @@ enum CompressError: Error {
 
 enum ImageFormat: String {
     case jpg = "jpg"
+    case jpeg = "jpeg"
     case png = "png"
     
     var pathString: String {
@@ -37,6 +38,7 @@ enum ImageFormat: String {
         switch self {
         case .jpg: return kUTTypeJPEG
         case .png: return kUTTypePNG
+        case .jpeg: return kUTTypeJPEG
         }
     }
 }
