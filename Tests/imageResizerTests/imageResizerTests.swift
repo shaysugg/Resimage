@@ -1,7 +1,7 @@
 import XCTest
 import class Foundation.Bundle
 
-@testable import Resimage
+@testable import resimage
 
 final class imageResizerTests: XCTestCase {
     
