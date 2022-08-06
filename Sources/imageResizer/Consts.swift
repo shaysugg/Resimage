@@ -25,7 +25,7 @@ enum CompressError: Error {
 }
 
 
-enum ImageFormat: String {
+enum ImageFormat: String, CaseIterable {
     case jpg = "jpg"
     case jpeg = "jpeg"
     case png = "png"
