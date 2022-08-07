@@ -34,19 +34,20 @@ struct IconResizeCommand: ParsableCommand {
             throw InvalidTemplate()
         }
         
-        var divideInfo: [DivideImagInfo] {
+        var divideInfo: [DivideImageInfo] {
             switch iconTemplate {
+                //TODO: Android Sizes
             case .android:
                 return [
-                    DivideImagInfo(divideBy: 1, name: "\(imageName)@3"),
-                    DivideImagInfo(divideBy: 2, name: "\(imageName)@2"),
-                    DivideImagInfo(divideBy: 3, name: "\(imageName)@1")
+                    DivideImageInfo(divideBy: 1, name: "\(imageName)@3"),
+                    DivideImageInfo(divideBy: 2, name: "\(imageName)@2"),
+                    DivideImageInfo(divideBy: 3, name: "\(imageName)@1")
                 ]
             case .ios:
                 return [
-                    DivideImagInfo(divideBy: 1, name: "\(imageName)@3"),
-                    DivideImagInfo(divideBy: 2, name: "\(imageName)@2"),
-                    DivideImagInfo(divideBy: 3, name: "\(imageName)@1")
+                    DivideImageInfo(divideBy: 1, name: "\(imageName)@3"),
+                    DivideImageInfo(divideBy: 2, name: "\(imageName)@2"),
+                    DivideImageInfo(divideBy: 3, name: "\(imageName)@1")
                 ]
             }
         }
@@ -127,7 +128,7 @@ struct IconResizeCommand: ParsableCommand {
         
     }
     
-    fileprivate func resize(dividedBy devides: [DivideImagInfo], imagesIn imagesURL: URL, saveTo saveDir: URL) throws {
+    func resize(dividedBy devides: [DivideImageInfo], imagesIn imagesURL: URL, saveTo saveDir: URL) throws {
         
         let url = imagesURL
         let acceptedImagePathExtensions = ImageFormat.allCases.map(\.pathString)
@@ -166,7 +167,7 @@ struct IconResizeCommand: ParsableCommand {
             for div in devides {
                 let divSize = CGSize(width: size.width / div.divideBy, height: size.height / div.divideBy)
                 guard let dividedImage = drawCGImageUsingCoreGraphic(fromSource: source, toSize: divSize) else {
-                    errors.append(.bufferingError)
+                    errors.append(.resizingImage)
                     continue
                 }
                 
@@ -182,7 +183,7 @@ struct IconResizeCommand: ParsableCommand {
     
 }
 
-fileprivate struct DivideImagInfo {
+struct DivideImageInfo {
     let divideBy: CGFloat
     let name: String
 }
