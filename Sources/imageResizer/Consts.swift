@@ -14,6 +14,7 @@ enum ResizeError: Error {
     case unvalidImageFormat
     case unvalidGivenSize
     case bufferingError
+    case resizingImage
     
 }
 
