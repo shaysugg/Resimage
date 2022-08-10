@@ -97,7 +97,7 @@ struct AppIconCommand: ParsableCommand {
 }
 
 fileprivate enum AppIconTemplate: String {
-    case android = "android"
+//    case android = "android"
     case ios = "ios"
 }
 
