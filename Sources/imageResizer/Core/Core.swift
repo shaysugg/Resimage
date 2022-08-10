@@ -21,7 +21,7 @@ func drawCGImageUsingAccelerate(fromSource source: CGImageSource, toSize size: C
     // Create CGImage From Data
         guard let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil),
         let colorSpace = cgImage.colorSpace
-    else {throw ResizeError.unvalidImageData}
+    else {throw URLError.unvalidImageData(path: "")} //TODO: Path???
     
     // Create a source buffer
     var format = vImage_CGImageFormat(bitsPerComponent: numericCast(cgImage.bitsPerComponent),
@@ -35,7 +35,7 @@ func drawCGImageUsingAccelerate(fromSource source: CGImageSource, toSize size: C
     var sourceBuffer = vImage_Buffer()
     
     var error = vImageBuffer_InitWithCGImage(&sourceBuffer, &format, nil, cgImage, numericCast(kvImageNoFlags))
-    guard error == kvImageNoError else { throw ResizeError.bufferingError }
+    guard error == kvImageNoError else { throw ResizeError(using: .usingAccelerate) }
     
     let bytesPerPixel = cgImage.bitsPerPixel
     let destBytesPerRow = Int(size.width) * bytesPerPixel
@@ -48,11 +48,11 @@ func drawCGImageUsingAccelerate(fromSource source: CGImageSource, toSize size: C
     
     // Scale the image
     error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, numericCast(kvImageHighQualityResampling))
-    guard error == kvImageNoError else { throw ResizeError.bufferingError }
+    guard error == kvImageNoError else { throw ResizeError(using: .usingAccelerate) }
 
     // Create a CGImage from vImage_Buffer
-    guard let destCGImage = vImageCreateCGImageFromBuffer(&destBuffer, &format, nil, nil, numericCast(kvImageNoFlags), &error)?.takeRetainedValue() else { throw ResizeError.bufferingError }
-    guard error == kvImageNoError else { throw ResizeError.bufferingError }
+    guard let destCGImage = vImageCreateCGImageFromBuffer(&destBuffer, &format, nil, nil, numericCast(kvImageNoFlags), &error)?.takeRetainedValue() else { throw ResizeError(using: .usingAccelerate) }
+    guard error == kvImageNoError else { throw ResizeError(using: .usingAccelerate) }
     
     return destCGImage
     

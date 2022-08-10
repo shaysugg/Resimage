@@ -41,13 +41,13 @@ struct Resize: ParsableCommand {
         
         // Creating Data from given URLpath
         let url = URL(fileURLWithPath: fromURL)
-        guard let data = try? Data(contentsOf: url) else { throw ResizeError.unvalidURL}
+        guard let data = try? Data(contentsOf: url) else { throw URLError.unvalidURL(path: url.path)}
         let imageCFData = NSData(data: data) as CFData
 
         
         
         // Read image width and height from it's file data info
-        guard let source = CGImageSourceCreateWithData(imageCFData, nil) else { throw ResizeError.unvalidImageData}
+        guard let source = CGImageSourceCreateWithData(imageCFData, nil) else { throw URLError.unvalidImageData(path: url.path)}
         let deminsion = configureImageSize(atSource: source)
         let imageWidth = deminsion.width
         let imageHeight = deminsion.height
@@ -94,7 +94,7 @@ struct Resize: ParsableCommand {
         guard let imageFormat = format == nil ?
                 ImageFormat(rawValue: url.pathExtension) :
             ImageFormat(rawValue: format!)
-            else { throw ResizeError.unvalidImageFormat }
+        else { throw URLError.unvalidImageFormat(format: format) }
         
         
         
@@ -103,17 +103,13 @@ struct Resize: ParsableCommand {
         
         
         guard let destenation = CGImageDestinationCreateWithURL(destenationURL as CFURL, imageFormat.cfsting, 1, nil)
-            else { throw ResizeError.unvalidStoreToPath }
+        else { throw URLError.unvalidStoreToPath(path: destenationURL.path) }
         CGImageDestinationAddImage(destenation, resizedImage!, nil)
         CGImageDestinationFinalize(destenation)
         
         print(" ✔ Image successfully resized and saved to: \n",destenationURL)
     }
     
-    
-    
-    
-    
-    
-    
 }
+
+

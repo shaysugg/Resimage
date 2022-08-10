@@ -7,23 +7,40 @@
 
 import Foundation
 
-enum ResizeError: Error {
-    case unvalidURL
-    case unvalidStoreToPath
-    case unvalidImageData
-    case unvalidImageFormat
-    case unvalidGivenSize
-    case bufferingError
-    case resizingImage
+enum URLError: LocalizedError {
+    case unvalidURL(path: String)
+    case unvalidStoreToPath(path: String)
+    case unvalidImageData(path: String)
+    case unvalidImageFormat(format: String?)
     
+    
+    var errorDescription: String? {
+        switch self {
+        case .unvalidURL(let url):
+            return "\(url) is not a valid URL"
+        case .unvalidStoreToPath(let path):
+            return "\(path) is not a valid URL"
+        case .unvalidImageData(let path):
+            return "The data at \(path) is not valid image data"
+        case .unvalidImageFormat(let format):
+            return "The format: \(format) is not supported"
+        }
+    }
 }
 
-enum CompressError: Error {
-    case unvalidCompressSize
-    case unvalidGivenURL
-    case unvalidImageData
-    case writingCompressedImageData
+struct ResizeError: LocalizedError {
+    enum Using {
+    case usingAccelerate
+    case usingCG
+    }
+    
+    let using: Using
+    
+    var errorDescription: String? {
+        return "An error happend while resizing the image"
+    }
 }
+
 
 
 enum ImageFormat: String, CaseIterable {

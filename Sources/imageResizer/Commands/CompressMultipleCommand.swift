@@ -28,12 +28,12 @@ struct CompressMultiple: ParsableCommand {
     
     
     func run() throws {
-        var errors = [CompressError]()
+        var errors = [Error]()
         
         // Check compress amount is valid
         guard let compress = compress,
               (0 ..< 1).contains(compress)
-        else { throw CompressError.unvalidCompressSize }
+        else { throw CompressError.unvalidCompressSize(size: compress) }
         
         var compressAmount: CGFloat {
             if compress == 0 { return 0.001 }
@@ -45,10 +45,10 @@ struct CompressMultiple: ParsableCommand {
         // Turn all valid image paths to URLS
         let imageURLs =
             try FileManager.default.contentsOfDirectory(
-            at: URL(fileURLWithPath: imagesDirectoryPath),
-            includingPropertiesForKeys: nil,
-            options: [.skipsSubdirectoryDescendants, .skipsHiddenFiles])
-            
+                at: URL(fileURLWithPath: imagesDirectoryPath),
+                includingPropertiesForKeys: nil,
+                options: [.skipsSubdirectoryDescendants, .skipsHiddenFiles])
+        
             .filter { (url) -> Bool in
                 ImageFormat(rawValue: url.pathExtension.lowercased()) != nil
             }
@@ -59,15 +59,12 @@ struct CompressMultiple: ParsableCommand {
         var destinationDirectoryURL: URL!
         if storeTo == nil {
             destinationDirectoryURL =
-                URL(fileURLWithPath: imagesDirectoryPath)
+            URL(fileURLWithPath: imagesDirectoryPath)
                 .appendingPathComponent("Resized", isDirectory: true)
-            
-            do {
-                try FileManager.default.createDirectory(
-                    at: destinationDirectoryURL,
-                    withIntermediateDirectories: true,
-                    attributes: nil)
-            }catch { throw CompressError.unvalidGivenURL }
+            try? FileManager.default.createDirectory(
+                at: destinationDirectoryURL,
+                withIntermediateDirectories: true,
+                attributes: nil)
             
         }else{
             destinationDirectoryURL = URL(fileURLWithPath: storeTo!)
@@ -81,7 +78,7 @@ struct CompressMultiple: ParsableCommand {
             
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
                   let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
-                errors.append(.unvalidImageData)
+                      errors.append(URLError.unvalidImageData(path: url.path))
                 return
             }
             
@@ -95,7 +92,7 @@ struct CompressMultiple: ParsableCommand {
             
             guard let destination = CGImageDestinationCreateWithData(data, imageType, 1, nil)
             else {
-                errors.append(CompressError.unvalidImageData)
+                errors.append(URLError.unvalidImageData(path: url.path))
                 return
             }
             
@@ -110,7 +107,7 @@ struct CompressMultiple: ParsableCommand {
             
             do { try data.write(to: destinationURL, options: .atomic) }
             catch {
-                errors.append(CompressError.writingCompressedImageData)
+                errors.append(CompressError.writingCompressedImageData(path: destinationURL.path))
                 return
             }
             
@@ -123,4 +120,20 @@ struct CompressMultiple: ParsableCommand {
             print(" ✘ errors: \(errors)")
     }
     
+}
+
+fileprivate enum CompressError: LocalizedError {
+    case unvalidCompressSize(size: Float?)
+    case writingCompressedImageData(path: String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .unvalidCompressSize(let size?):
+            return "\(size) is not a valid compress value, should be between 0 and 1."
+        case .writingCompressedImageData(let path):
+            return "Can't write data of image at \(path)"
+        case .unvalidCompressSize(size: .none):
+            return "Please provide a compress value."
+        }
+    }
 }

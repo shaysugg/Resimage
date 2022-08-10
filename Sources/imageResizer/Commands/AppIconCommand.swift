@@ -15,17 +15,17 @@ struct AppIconCommand: ParsableCommand {
     public static let configurations = CommandConfiguration(
         commandName: "app-icon",
         abstract: """
-    Create different app icon size based on the given image path. For full functionality the image size should be bigger than 1024x1024 for iOS and ... for Android
+    Create required platform app icons from the given image path. For full functionality the image size should be bigger than 1024x1024 for iOS and ... for Android
     """)
     
     @Argument(help: "Path of the image that you want to export it as app icon.")
     private var fromURL: String
     
-    @Option(name: .shortAndLong, help: "App Icon template, can be android or ios.")
-    private var template: String
+    @Option(name: .shortAndLong, help: "Which platform icons you want, can be [ios]. (android still wip)")
+    private var platform: String
     
     func run() throws {
-        guard let appIconTemplate = AppIconTemplate(rawValue: template) else {
+        guard let appIconTemplate = AppIconTemplate(rawValue: platform) else {
             throw InvalidAppIconTemplate()
         }
         
@@ -72,22 +72,22 @@ struct AppIconCommand: ParsableCommand {
         try? FileManager.default.createDirectory(at: resizedDirURL, withIntermediateDirectories: true, attributes: nil)
         
         //Create CGImage source
-        guard let data = try? Data(contentsOf: url) else {throw ResizeError.unvalidURL }
+        guard let data = try? Data(contentsOf: url) else {throw URLError.unvalidImageData(path: url.path) }
         let cfData = NSData(data: data) as CFData
-        guard let imageSource = CGImageSourceCreateWithData(cfData, nil) else { throw ResizeError.unvalidImageData }
+        guard let imageSource = CGImageSourceCreateWithData(cfData, nil) else { throw URLError.unvalidImageData(path: url.path) }
            
-        var errors = [ResizeError]()
+        var errors = [Error]()
         
         //Resize Image to different app icon sizes and save them
         for sizeInfo in sizes {
             guard let image = drawCGImageUsingCoreGraphic(fromSource: imageSource, toSize: sizeInfo.size) else {
                 print(" ✘ Resizing \(sizeInfo.name) failed!")
-                errors.append(.resizingImage)
+                errors.append(ResizeError(using: .usingAccelerate))
                 continue
             }
             let destenationURL = resizedDirURL.appendingPathComponent(sizeInfo.name).appendingPathExtension(ImageFormat.png.pathString)
             guard let destenation = CGImageDestinationCreateWithURL(destenationURL as CFURL, ImageFormat.png.cfsting, 1, nil)
-                else { throw ResizeError.unvalidStoreToPath }
+            else { throw URLError.unvalidStoreToPath(path: destenationURL.path) }
             CGImageDestinationAddImage(destenation, image, nil)
             CGImageDestinationFinalize(destenation)
             
