@@ -9,6 +9,7 @@ import ArgumentParser
 import Foundation
 import CoreGraphics
 import Accelerate
+import ImageIO
 
 
 struct Resize: ParsableCommand {
@@ -40,19 +41,16 @@ struct Resize: ParsableCommand {
         
         // Creating Data from given URLpath
         let url = URL(fileURLWithPath: fromURL)
-        guard let data = try? Data(contentsOf: url) else { throw ResizeError.unvalidURL}
+        guard let data = try? Data(contentsOf: url) else { throw URLError.unvalidURL(path: url.path)}
         let imageCFData = NSData(data: data) as CFData
 
         
         
         // Read image width and height from it's file data info
-        guard let source = CGImageSourceCreateWithData(imageCFData, nil) else { throw ResizeError.unvalidImageData}
-
-        let imageproperties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil)! as NSDictionary
-        let imageHeight = imageproperties["PixelHeight"] as! Int
-        let imageWidth = imageproperties["PixelWidth"] as! Int
-        
-        
+        guard let source = CGImageSourceCreateWithData(imageCFData, nil) else { throw URLError.unvalidImageData(path: url.path)}
+        let deminsion = configureImageSize(atSource: source)
+        let imageWidth = deminsion.width
+        let imageHeight = deminsion.height
         
         // Calculate resize size
         var newSize: CGSize!
@@ -94,9 +92,9 @@ struct Resize: ParsableCommand {
         let fileName = "resized-" + url.deletingPathExtension().lastPathComponent
         
         guard let imageFormat = format == nil ?
-            ImageFormat(rawValue: url.pathExtension) :
+                ImageFormat(rawValue: url.pathExtension) :
             ImageFormat(rawValue: format!)
-            else { throw ResizeError.unvalidImageFormat }
+        else { throw URLError.unvalidImageFormat(format: format) }
         
         
         
@@ -105,69 +103,13 @@ struct Resize: ParsableCommand {
         
         
         guard let destenation = CGImageDestinationCreateWithURL(destenationURL as CFURL, imageFormat.cfsting, 1, nil)
-            else { throw ResizeError.unvalidStoreToPath }
+        else { throw URLError.unvalidStoreToPath(path: destenationURL.path) }
         CGImageDestinationAddImage(destenation, resizedImage!, nil)
         CGImageDestinationFinalize(destenation)
         
         print(" ✔ Image successfully resized and saved to: \n",destenationURL)
     }
     
-    
-    
-    
-    private func drawCGImageUsingAccelerate(fromSource source: CGImageSource, toSize size: CGSize) throws -> CGImage {
-        // Create CGImage From Data
-            guard let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil),
-            let colorSpace = cgImage.colorSpace
-        else {throw ResizeError.unvalidImageData}
-        
-        // Create a source buffer
-        var format = vImage_CGImageFormat(bitsPerComponent: numericCast(cgImage.bitsPerComponent),
-                                          bitsPerPixel: numericCast(cgImage.bitsPerPixel),
-                                          colorSpace: Unmanaged.passUnretained(colorSpace),
-                                          bitmapInfo: cgImage.bitmapInfo,
-                                          version: 0,
-                                          decode: nil,
-                                          renderingIntent: .absoluteColorimetric)
-        
-        var sourceBuffer = vImage_Buffer()
-        
-        var error = vImageBuffer_InitWithCGImage(&sourceBuffer, &format, nil, cgImage, numericCast(kvImageNoFlags))
-        guard error == kvImageNoError else { throw ResizeError.bufferingError }
-        
-        let bytesPerPixel = cgImage.bitsPerPixel
-        let destBytesPerRow = Int(size.width) * bytesPerPixel
-        let destData = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(size.height) * destBytesPerRow)
-        defer {
-            destData.deallocate()
-        }
-        var destBuffer = vImage_Buffer(data: destData, height: vImagePixelCount(Int(size.height)), width: vImagePixelCount(Int(size.width)), rowBytes: destBytesPerRow)
-        
-        
-        // Scale the image
-        error = vImageScale_ARGB8888(&sourceBuffer, &destBuffer, nil, numericCast(kvImageHighQualityResampling))
-        guard error == kvImageNoError else { throw ResizeError.bufferingError }
-
-        // Create a CGImage from vImage_Buffer
-        guard let destCGImage = vImageCreateCGImageFromBuffer(&destBuffer, &format, nil, nil, numericCast(kvImageNoFlags), &error)?.takeRetainedValue() else { throw ResizeError.bufferingError }
-        guard error == kvImageNoError else { throw ResizeError.bufferingError }
-        
-        return destCGImage
-        
-    }
-    
-    
-    
-    
-    private func drawCGImageUsingCoreGraphic(fromSource source: CGImageSource, toSize size: CGSize) -> CGImage? {
-        let options = [
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceThumbnailMaxPixelSize: max(size.width, size.height)
-            ] as CFDictionary
-        
-        return CGImageSourceCreateThumbnailAtIndex(source, 0, options)
-    }
-    
-    
 }
+
+
