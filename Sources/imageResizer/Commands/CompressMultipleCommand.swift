@@ -14,6 +14,7 @@ import AVFoundation
 
 struct CompressMultiple: ParsableCommand {
     public static let configuration = CommandConfiguration(
+        commandName: "compress",
         abstract: "Compress images that exist in a diractory")
     
     @Argument(help: "The directory that contains images you want to compress")

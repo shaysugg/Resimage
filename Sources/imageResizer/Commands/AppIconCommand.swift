@@ -12,10 +12,10 @@ import ImageIO
 struct AppIconCommand: ParsableCommand {
     
     //TODO: Better abstract
-    public static let configurations = CommandConfiguration(
+    public static let configuration = CommandConfiguration(
         commandName: "app-icon",
         abstract: """
-    Create required platform app icons from the given image path. For full functionality the image size should be bigger than 1024x1024 for iOS and ... for Android
+    Create required platform app icons from the given image path. For full functionality the image size should be bigger than 1024x1024 for iOS
     """)
     
     @Argument(help: "Path of the image that you want to export it as app icon.")

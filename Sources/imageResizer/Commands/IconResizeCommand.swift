@@ -11,7 +11,9 @@ import ImageIO
 
 struct IconResizeCommand: ParsableCommand {
     
-    public static let configurations = CommandConfiguration(commandName: "icon", abstract: "Resize the given image to each platform required icon size")
+    public static let configuration = CommandConfiguration(
+        commandName: "icon",
+        abstract: "Resize the given image to each platform required icon size")
     
     @Argument(help: "Directory of images or path of the image that you want to export them'\'it to the platform image sizes. The image(s) should be the biggest required size. ex: 3X for iOS xxxhdpi for android")
     private var fromURL: String
