@@ -76,4 +76,4 @@ $ cp -f .build/release/resimage /usr/local/bin/resimage
 
 ## TODO
 - [X] Compress multiple images of a directory
-- [ ] Resize to iOS and Android standard icon sizes
+- [X] Resize to iOS and Android standard icon sizes

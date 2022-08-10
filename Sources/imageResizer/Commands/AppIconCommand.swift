@@ -39,9 +39,6 @@ struct AppIconCommand: ParsableCommand {
         //Configure app icon sizes for each template
         var sizes: [AppIconSize] {
             switch appIconTemplate {
-            case .android:
-                return [
-                ]
             case .ios:
                 return [
                     AppIconSize(size: CGSize(width: 20, height: 20), name: imageNamewith("20@1x")),
