@@ -1,47 +1,28 @@
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat"> <img src="https://img.shields.io/badge/language-swift5.1-f48041.svg?style=flat">
 
 # Resimage
-A command-line tool written in swift for resizing your images super fast!
+A command-line tool written in swift for resizing images super fast!
 
 ## Usage
 * **Resize an image**
 ```
 $ resimage resize --help
 
-OVERVIEW: Resize image based on given width or heigh.
+OVERVIEW: Resimage is a Swift Command-line tool for resizing images.
 
-USAGE: resimage resize <from-url> [--store-to <store-to>] [--width <width>] [--height <height>] [--format <format>]
-
-ARGUMENTS:
-  <from-url>              URL of the image you want to resize.
+USAGE: resimage <subcommand>
 
 OPTIONS:
-  -s, --store-to <store-to>
-                          URL of the place that you want to save the resized
-                          image.
-  --width <width>         Resize width, Don't pass it if you want this to be
-                          calculate based on the height that you will pass.
-  --height <height>       Resize height, Don't pass it if you want this to
-                          be calculate based on the width that you will
-                          pass.
-  -f, --format <format>   Should pass png or jpg
   -h, --help              Show help information.
-```
-*  **Compress multiple images**
-```
-OVERVIEW: Compress images that exist in a diractory
 
-USAGE: resimage compress-multiple <images-directory-path> [--compress <compress>] [--store-to <store-to>]
-
-ARGUMENTS:
-  <images-directory-path> The directory that contains images you want to compress
-
-OPTIONS:
-  -c, --compress <compress>
-                          Amount of Compression you want, Should be between 0 to 1.
-  -s, --store-to <store-to>
-                          URL of the directory that you want to save compressed images.
-  -h, --help              Show help information.
+SUBCOMMANDS:
+  resize                  Resize image based on given width or heigh.
+  compress                Compress images that exist in a diractory
+  icon                    Resize the given image to each platform required icon
+                          size
+  app-icon                Create required platform app icons from the given
+                          image path. For full functionality the image size
+                          should be bigger than 1024x1024 for iOS
 ```
 
 ## Examples
@@ -58,6 +39,12 @@ $ resimage resize ~/desktop/picture.jpg --width 100 -s ~/desktop/resized/resized
 
 //Compress all images that exist in pictures directory to have half of the size of they had and store them to resized directory.
 $ resimage compress-multiple ~/desktop/pictures -c 0.5 -s ~/desktop/resized/
+
+//Resize the source images to iOS image required sizes. (1X, 2X, 3X)
+$ resimage icon ~/desktop/pictures/picture.png --platform iOS
+
+//Generate iOS required app icons based on the given path.
+$ resimage app-icon ~/desktop/pictures/picture.png --platform iOS
 ```
 
 ## Installation 
@@ -76,4 +63,4 @@ $ cp -f .build/release/resimage /usr/local/bin/resimage
 
 ## TODO
 - [X] Compress multiple images of a directory
-- [X] Resize to iOS and Android standard icon sizes
+- [X] Resize to iOS and Android icon sizes
